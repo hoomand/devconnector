@@ -1,2 +1,5 @@
+# start script, containing secrets
+start.sh
+
 # Dependency directories
 node_modules/
