@@ -3,9 +3,40 @@ const router = express.Router();
 const passport = require("passport");
 
 const Post = require("../../models/Post");
+const Profile = require("../../models/Profile");
 const validatePostInput = require("../../validation/post");
 
 router.get("/test", (req, res) => res.json({ msg: "posts work!" }));
+
+// @route   GET api/post
+// @desc    Get all posts
+// @access  Public
+router.get("/", (req, res) => {
+  const errors = {};
+  Post.find()
+    .sort({ date: -1 })
+    .then(posts => {
+      if (!posts) {
+        errors.noposts = "There are no posts";
+        return res.status(404).json(errors);
+      }
+      res.json(posts);
+    })
+    .catch(err => res.status(400).json({ post: "There are no posts" }));
+});
+
+// @route   GET api/post/:id
+// @desc    Get a single post by id
+// @access  Public
+router.get("/:id", (req, res) => {
+  const errors = {};
+  Post.findById(req.params.id)
+    .sort({ date: -1 })
+    .then(post => {
+      res.json(post);
+    })
+    .catch(err => res.status(400).json({ post: "Post does not exist" }));
+});
 
 // @route   POST api/post
 // @desc    Create new post
@@ -26,6 +57,34 @@ router.post(
       user: req.user.id
     });
     newPost.save().then(post => res.json(post));
+  }
+);
+
+// @route   Delete api/post/:id
+// @desc    Deletes a post
+// @access  Private
+router.delete(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      Post.findById(req.params.id)
+        .then(post => {
+          if (post.user.toString() !== req.user.id) {
+            return res
+              .status(401)
+              .json({ notauthorized: "The user is not authorized" });
+          }
+
+          // Delete now that the user is correct
+          post.remove().then(() => {
+            res.status(200).json({ success: "Post was successfully deleted" });
+          });
+        })
+        .catch(err =>
+          res.status(404).json({ postnotfound: "No post was found" })
+        );
+    });
   }
 );
 
