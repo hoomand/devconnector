@@ -60,7 +60,7 @@ router.post(
   }
 );
 
-// @route   Delete api/post/like/:id
+// @route   POST api/post/like/:id
 // @desc    Like post
 // @access  Private
 router.post(
@@ -92,8 +92,8 @@ router.post(
   }
 );
 
-// @route   Delete api/post/unlike/:id
-// @desc    Like post
+// @route   POST api/post/unlike/:id
+// @desc    Unlike post
 // @access  Private
 router.post(
   "/unlike/:id",
@@ -129,7 +129,7 @@ router.post(
   }
 );
 
-// @route   POST api/post/like/:id
+// @route   DELETE api/post/like/:id
 // @desc    Deletes a post
 // @access  Private
 router.delete(
