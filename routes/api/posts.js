@@ -61,6 +61,38 @@ router.post(
 );
 
 // @route   Delete api/post/:id
+// @desc    Like post
+// @access  Private
+router.post(
+  "/like/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      Post.findById(req.params.id)
+        .then(post => {
+          // Check if the user had already liked this before
+          if (
+            post.likes.filter(like => like.user.toString() === req.user.id)
+              .length > 0
+          ) {
+            return res
+              .status(400)
+              .json({ alreadyLiked: "User already liked this post" });
+          }
+
+          // Add user id to likes
+          post.likes.unshift({ user: req.user.id });
+
+          post.save().then(post => res.json(post));
+        })
+        .catch(err =>
+          res.status(404).json({ postnotfound: "No post was found" })
+        );
+    });
+  }
+);
+
+// @route   POST api/post/like/:id
 // @desc    Deletes a post
 // @access  Private
 router.delete(
