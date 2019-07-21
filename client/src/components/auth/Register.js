@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import TextFieldGroup from "../common/TextFieldGroup";
+import axios from "axios";
 
 class Register extends Component {
   constructor() {
@@ -39,7 +40,11 @@ class Register extends Component {
       password2: this.state.password2
     };
 
-    this.props.registerUser(newUser, this.props.history);
+    // this.props.registerUser(newUser, this.props.history);
+    axios
+      .post("/api/users/register", newUser)
+      .then(res => console.log(res.data))
+      .catch(err => console.error(err.response.data));
   };
 
   render() {
