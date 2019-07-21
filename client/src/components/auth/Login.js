@@ -19,8 +19,14 @@ class Login extends Component {
       password: this.state.password
     };
 
-    this.props.loginUser(userData);
+    //this.props.loginUser(userData);
+    console.log(userData);
   };
+
+  onChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
   render() {
     const { errors } = this.state;
 
