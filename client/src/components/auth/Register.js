@@ -1,6 +1,8 @@
 import React, { Component } from "react";
+// For props type checking
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import TextFieldGroup from "../common/TextFieldGroup";
-import axios from "axios";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 
@@ -28,6 +30,12 @@ class Register extends Component {
   //     }
   //   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
+  }
+
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -42,11 +50,9 @@ class Register extends Component {
       password2: this.state.password2
     };
 
+    // The second parameter allows us to redirect from within action
+    // We also need to wrap the component in withRouter (last line of this file)
     this.props.registerUser(newUser, this.props.history);
-    // axios
-    //   .post("/api/users/register", newUser)
-    //   .then(res => console.log(res.data))
-    //   .catch(err => console.error(err.response.data));
   };
 
   render() {
@@ -104,7 +110,18 @@ class Register extends Component {
   }
 }
 
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors
+});
+
 export default connect(
-  null,
+  mapStateToProps,
   { registerUser }
-)(Register);
+)(withRouter(Register));
